@@ -1,16 +1,18 @@
+# Test update
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Force Pandas to display ALL columns and rows without truncating with '...'
-pd.set_option('display.max_columns', None)
+pd.set_option('display.max_columns'
+, None)
 pd.set_option('display.width', 1000)
 
 # 1. Define C-MAPSS Column Headers
 index_cols = ['unit_nr', 'time_cycles']
 setting_cols = ['setting_1', 'setting_2', 'setting_3']
 sensor_cols = [f's_{i}' for i in range(1, 22)]  # 21 sensors (s_1 to s_21)
-col_names = index_cols + setting_cols + sensor_cols
+col_names = index_cols + setting_cols + sensor_cols 
 
 # 2. Load Dataset (Replace 'train_FD001.txt' with your file path if needed)
 # C-MAPSS uses spaces as separators
