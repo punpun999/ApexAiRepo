@@ -101,9 +101,30 @@ def main():
     # Plot predicted vs. true RUL for the first validation run, so you can
     # see whether the model tracks the degradation trend over time.
     n_first_run = len(val_features[0])
+    raw_preds_first_run = preds[:n_first_run]
+
+    # Smooth the raw per-window predictions with a rolling average. Each
+    # window's guess is noisy on its own, but the underlying wear level
+    # barely changes between neighboring windows, so averaging nearby
+    # predictions should cancel out a lot of that window-to-window jitter.
+    SMOOTHING_WINDOW = 15  # number of neighboring predictions to average
+
+    def rolling_average(values, window):
+        values = np.asarray(values)
+        kernel = np.ones(window) / window
+        # "same" mode keeps the output the same length as the input, which
+        # keeps this simple to plot against the true RUL on the same x-axis.
+        return np.convolve(values, kernel, mode="same")
+
+    smoothed_preds = rolling_average(raw_preds_first_run, SMOOTHING_WINDOW)
+
     plt.figure(figsize=(9, 5))
     plt.plot(range(n_first_run), val_labels[0], label="True RUL", linewidth=2)
-    plt.plot(range(n_first_run), preds[:n_first_run], label="Predicted RUL", linewidth=2, alpha=0.8)
+    plt.plot(range(n_first_run), raw_preds_first_run, label="Predicted RUL (raw)",
+              linewidth=1, alpha=0.35, color="orange")
+    plt.plot(range(n_first_run), smoothed_preds,
+              label=f"Predicted RUL (smoothed, window={SMOOTHING_WINDOW})",
+              linewidth=2, color="darkorange")
     plt.xlabel("Window index (time)")
     plt.ylabel("RUL (cycles)")
     plt.title("APEX-AI v1 Baseline — Predicted vs. True RUL (FEMTO, condition 1)")
@@ -111,6 +132,10 @@ def main():
     plt.tight_layout()
     plt.savefig("rul_baseline_result.png", dpi=150)
     print("Saved plot to rul_baseline_result.png")
+
+    smoothed_rmse = np.sqrt(mean_squared_error(val_labels[0], smoothed_preds))
+    print(f"Raw prediction RMSE (this run): {rmse:.2f} cycles")
+    print(f"Smoothed prediction RMSE (this run): {smoothed_rmse:.2f} cycles")
 
 
 if __name__ == "__main__":
