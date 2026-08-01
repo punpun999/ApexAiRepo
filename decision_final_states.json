@@ -1,0 +1,166 @@
+{
+  "dev_run_0": {
+    "run_id": "dev_run_0",
+    "window_index": 2802,
+    "deviation_score": 73.97,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 706,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 415,
+      "rul_label": 2388.0,
+      "hours_to_failure": 6.63
+    },
+    "first_critical": {
+      "window": 423,
+      "rul_label": 2380.0,
+      "hours_to_failure": 6.61
+    }
+  },
+  "dev_run_1": {
+    "run_id": "dev_run_1",
+    "window_index": 870,
+    "deviation_score": 5.53,
+    "status": "WARNING",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 16,
+    "rul_label": 1.0,
+    "recommended_action": "Schedule inspection",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 857,
+      "rul_label": 14.0,
+      "hours_to_failure": 0.04
+    },
+    "first_critical": null
+  },
+  "val_run_0": {
+    "run_id": "val_run_0",
+    "window_index": 2374,
+    "deviation_score": 92.97,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 746,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 1014,
+      "rul_label": 1361.0,
+      "hours_to_failure": 3.78
+    },
+    "first_critical": {
+      "window": 1634,
+      "rul_label": 741.0,
+      "hours_to_failure": 2.06
+    }
+  },
+  "test_run_0": {
+    "run_id": "test_run_0",
+    "window_index": 1427,
+    "deviation_score": 119.69,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 346,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 1084,
+      "rul_label": 344.0,
+      "hours_to_failure": 0.96
+    },
+    "first_critical": {
+      "window": 1085,
+      "rul_label": 343.0,
+      "hours_to_failure": 0.95
+    }
+  },
+  "test_run_1": {
+    "run_id": "test_run_1",
+    "window_index": 2462,
+    "deviation_score": 23.34,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 52,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 2413,
+      "rul_label": 50.0,
+      "hours_to_failure": 0.14
+    },
+    "first_critical": {
+      "window": 2420,
+      "rul_label": 43.0,
+      "hours_to_failure": 0.12
+    }
+  },
+  "test_run_2": {
+    "run_id": "test_run_2",
+    "window_index": 2447,
+    "deviation_score": 16.48,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 61,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 1632,
+      "rul_label": 816.0,
+      "hours_to_failure": 2.27
+    },
+    "first_critical": {
+      "window": 1635,
+      "rul_label": 813.0,
+      "hours_to_failure": 2.26
+    }
+  },
+  "test_run_3": {
+    "run_id": "test_run_3",
+    "window_index": 2258,
+    "deviation_score": 32.27,
+    "status": "CRITICAL",
+    "warning_threshold": 3.5,
+    "critical_threshold": 7.0,
+    "consecutive_exceedances": 150,
+    "rul_label": 1.0,
+    "recommended_action": "Prioritize planned maintenance",
+    "reactive_cost_sar": 101000,
+    "predictive_cost_sar": 80000,
+    "estimated_saving_sar": 21000,
+    "first_warning": {
+      "window": 1109,
+      "rul_label": 1150.0,
+      "hours_to_failure": 3.19
+    },
+    "first_critical": {
+      "window": 2211,
+      "rul_label": 48.0,
+      "hours_to_failure": 0.13
+    }
+  }
+}
