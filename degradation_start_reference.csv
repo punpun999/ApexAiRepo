@@ -1,0 +1,8 @@
+run,n_windows,deg_start_window,deg_start_pct_of_life,healthy_zone_windows
+dev_run_0,2803,1788,63.8,1588
+dev_run_1,871,826,94.8,626
+val_run_0,2375,1363,57.4,1163
+test_run_0,1428,1085,76.0,885
+test_run_1,2463,2411,97.9,2211
+test_run_2,2448,1631,66.6,1431
+test_run_3,2259,1813,80.3,1613
