@@ -21,14 +21,19 @@ not hard-coded truths.
 
 Usage:
   as a module:   from decision_layer import DecisionLayer
-  as a script:   python decision_layer.py
-                 reads data/deviation_score_per_snapshot.csv, writes
-                 decision_timeline.csv + decision_final_states.json
+  as a script:   python src/decision_layer.py
+                 reads results/deviation_score_per_snapshot.csv, writes
+                 results/decision_timeline.csv + results/decision_final_states.json
 """
 
 import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 # ---------------- default configuration (team-editable) ----------------
 DEFAULTS = dict(
@@ -122,7 +127,7 @@ class DecisionLayer:
 
 
 def main():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
     timeline_rows, final_states = [], {}
 
     for run, g in scores.groupby("run", sort=False):
@@ -147,8 +152,8 @@ def main():
         rec["first_critical"] = first_alarm.get("CRITICAL")
         final_states[run] = rec
 
-    pd.DataFrame(timeline_rows).to_csv("decision_timeline.csv", index=False)
-    with open("decision_final_states.json", "w") as f:
+    pd.DataFrame(timeline_rows).to_csv(RESULTS / "decision_timeline.csv", index=False)
+    with open(RESULTS / "decision_final_states.json", "w") as f:
         json.dump(final_states, f, indent=2)
 
     print("Saved decision_timeline.csv "

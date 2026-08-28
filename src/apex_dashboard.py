@@ -7,12 +7,14 @@ states — this app renders both, plus the cost-based threshold analysis
 (the research contribution) with live sensitivity sliders.
 
 Run from the repo root:
-    streamlit run apex_dashboard.py
+    streamlit run src/apex_dashboard.py
 
 Requires: streamlit, plotly  (pip install streamlit plotly)
-Reads:    deviation_score_per_snapshot.csv, features_per_snapshot.csv
+Reads:    results/deviation_score_per_snapshot.csv, results/features_per_snapshot.csv
 Imports:  decision_layer.py (must be in the same folder)
 """
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -20,6 +22,9 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from decision_layer import DecisionLayer, DEFAULTS, ACTIONS
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 # ---------------- constants (mirror decision layer / evaluation) ----------------
 CALIBRATION_WINDOWS = 200
@@ -42,8 +47,8 @@ def windows_to_hours(n):
 # ------------------------------ cached data prep ------------------------------
 @st.cache_data
 def load_data():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
-    feats = pd.read_csv("features_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
     return scores, feats
 
 

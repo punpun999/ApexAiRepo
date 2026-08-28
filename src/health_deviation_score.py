@@ -21,14 +21,16 @@ CHANGES vs previous version (agreed with the team):
    reference (3-sigma rule on RMS), without re-loading the raw dataset.
 
 Outputs:
-    deviation_score_per_snapshot.csv  (same schema as before)
-    deviation_score_summary.csv       (same schema as before)
-    features_per_snapshot.csv         (NEW: run, window_index, all 10 features)
-    deviation_score_<run>.png         (one plot per run)
+    results/deviation_score_per_snapshot.csv  (same schema as before)
+    results/deviation_score_summary.csv       (same schema as before)
+    results/features_per_snapshot.csv         (NEW: run, window_index, all 10 features)
+    figures/deviation_score_<run>.png         (one plot per run)
 
 Run:
-    python health_deviation_score.py
+    python src/health_deviation_score.py
 """
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -37,6 +39,10 @@ from scipy.stats import kurtosis
 from scipy.fft import rfft, rfftfreq
 
 import rul_datasets
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
+FIGURES = ROOT / "figures"
 
 SAMPLE_RATE_HZ = 25600
 SECONDS_PER_SNAPSHOT = 10          # FEMTO: one 0.1 s recording every 10 s
@@ -129,7 +135,7 @@ def main():
         plt.title(f"Health Deviation Score — {run_name}")
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"deviation_score_{run_name}.png", dpi=150)
+        plt.savefig(FIGURES / f"deviation_score_{run_name}.png", dpi=150)
         plt.close()
 
         summary_rows.append({
@@ -143,15 +149,15 @@ def main():
         print(f"{run_name}: mean={scores.mean():.2f}, max={scores.max():.2f}, "
               f"final={scores[-1]:.2f}")
 
-    pd.DataFrame(summary_rows).to_csv("deviation_score_summary.csv", index=False)
+    pd.DataFrame(summary_rows).to_csv(RESULTS / "deviation_score_summary.csv", index=False)
     print("\nSaved deviation_score_summary.csv")
 
     per_snapshot_df = pd.concat(all_per_snapshot_rows, ignore_index=True)
-    per_snapshot_df.to_csv("deviation_score_per_snapshot.csv", index=False)
+    per_snapshot_df.to_csv(RESULTS / "deviation_score_per_snapshot.csv", index=False)
     print(f"Saved deviation_score_per_snapshot.csv ({len(per_snapshot_df)} rows)")
 
     features_df = pd.concat(all_feature_rows, ignore_index=True)
-    features_df.to_csv("features_per_snapshot.csv", index=False)
+    features_df.to_csv(RESULTS / "features_per_snapshot.csv", index=False)
     print(f"Saved features_per_snapshot.csv ({len(features_df)} rows)")
 
 
