@@ -1,0 +1,6 @@
+model,mae_snapshots,rmse_snapshots,mae_hours,rmse_hours,mae_vs_naive_pct,rmse_vs_naive_pct
+naive,585.88,682.23,1.627,1.895,0.0,0.0
+linear,781.67,1297.56,2.171,3.604,-33.4,-90.2
+linear_smoothed,750.25,1235.69,2.084,3.432,-28.1,-81.1
+random_forest,735.47,915.07,2.043,2.542,-25.5,-34.1
+random_forest_smoothed,631.85,777.25,1.755,2.159,-7.8,-13.9

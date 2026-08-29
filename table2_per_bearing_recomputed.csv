@@ -1,0 +1,8 @@
+Bearing,Role,Snapshots,rho,Early median,Late median,Lead to end (h)
+Bearing1_1,Development,2803,0.869,0.699,8.106,2.8
+Bearing1_2,Development,871,0.601,0.563,2.23,0.04
+Bearing1_3,Evaluation,2375,0.857,0.611,27.43,2.1
+Bearing1_4,Evaluation,1428,0.892,0.688,93.227,0.95
+Bearing1_5,Evaluation,2463,0.832,0.53,1.621,0.14
+Bearing1_6,Evaluation,2448,0.701,0.745,2.621,2.27
+Bearing1_7,Evaluation,2259,0.86,0.699,4.627,1.24

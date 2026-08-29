@@ -1,0 +1,41 @@
+run,bearing,false_alarm_events,lead_hours,indicator,threshold_type,threshold
+val_run_0,Bearing1_3,5,2.1,HDS (10 features),fixed 3.5,3.5
+test_run_0,Bearing1_4,1,0.95,HDS (10 features),fixed 3.5,3.5
+test_run_1,Bearing1_5,0,0.14,HDS (10 features),fixed 3.5,3.5
+test_run_2,Bearing1_6,0,2.27,HDS (10 features),fixed 3.5,3.5
+test_run_3,Bearing1_7,2,1.24,HDS (10 features),fixed 3.5,3.5
+val_run_0,Bearing1_3,5,2.1,HDS (10 features),calibrated P99.9,3.365
+test_run_0,Bearing1_4,1,0.95,HDS (10 features),calibrated P99.9,3.365
+test_run_1,Bearing1_5,0,0.14,HDS (10 features),calibrated P99.9,3.365
+test_run_2,Bearing1_6,0,2.27,HDS (10 features),calibrated P99.9,3.365
+test_run_3,Bearing1_7,5,1.24,HDS (10 features),calibrated P99.9,3.365
+val_run_0,Bearing1_3,1,2.8,RMS only,fixed 3.5,3.5
+test_run_0,Bearing1_4,3,0.95,RMS only,fixed 3.5,3.5
+test_run_1,Bearing1_5,4,0.06,RMS only,fixed 3.5,3.5
+test_run_2,Bearing1_6,15,2.27,RMS only,fixed 3.5,3.5
+test_run_3,Bearing1_7,0,0.13,RMS only,fixed 3.5,3.5
+val_run_0,Bearing1_3,0,2.67,RMS only,calibrated P99.9,3.718
+test_run_0,Bearing1_4,0,0.95,RMS only,calibrated P99.9,3.718
+test_run_1,Bearing1_5,5,0.06,RMS only,calibrated P99.9,3.718
+test_run_2,Bearing1_6,15,2.27,RMS only,calibrated P99.9,3.718
+test_run_3,Bearing1_7,0,0.13,RMS only,calibrated P99.9,3.718
+val_run_0,Bearing1_3,0,,Best single (dominant_freq_ch0),fixed 3.5,3.5
+test_run_0,Bearing1_4,12,0.95,Best single (dominant_freq_ch0),fixed 3.5,3.5
+test_run_1,Bearing1_5,0,,Best single (dominant_freq_ch0),fixed 3.5,3.5
+test_run_2,Bearing1_6,0,,Best single (dominant_freq_ch0),fixed 3.5,3.5
+test_run_3,Bearing1_7,7,1.24,Best single (dominant_freq_ch0),fixed 3.5,3.5
+val_run_0,Bearing1_3,0,,Best single (dominant_freq_ch0),calibrated P99.9,5.52
+test_run_0,Bearing1_4,1,,Best single (dominant_freq_ch0),calibrated P99.9,5.52
+test_run_1,Bearing1_5,0,,Best single (dominant_freq_ch0),calibrated P99.9,5.52
+test_run_2,Bearing1_6,0,,Best single (dominant_freq_ch0),calibrated P99.9,5.52
+test_run_3,Bearing1_7,32,1.21,Best single (dominant_freq_ch0),calibrated P99.9,5.52
+val_run_0,Bearing1_3,12,2.81,Mahalanobis (full covariance),fixed 3.5,3.5
+test_run_0,Bearing1_4,13,0.95,Mahalanobis (full covariance),fixed 3.5,3.5
+test_run_1,Bearing1_5,8,0.14,Mahalanobis (full covariance),fixed 3.5,3.5
+test_run_2,Bearing1_6,2,2.27,Mahalanobis (full covariance),fixed 3.5,3.5
+test_run_3,Bearing1_7,6,1.24,Mahalanobis (full covariance),fixed 3.5,3.5
+val_run_0,Bearing1_3,22,2.75,Mahalanobis (full covariance),calibrated P99.9,11.462
+test_run_0,Bearing1_4,1,0.95,Mahalanobis (full covariance),calibrated P99.9,11.462
+test_run_1,Bearing1_5,49,0.14,Mahalanobis (full covariance),calibrated P99.9,11.462
+test_run_2,Bearing1_6,17,2.27,Mahalanobis (full covariance),calibrated P99.9,11.462
+test_run_3,Bearing1_7,11,1.24,Mahalanobis (full covariance),calibrated P99.9,11.462

@@ -1,0 +1,5 @@
+indicator,monotonicity,trendability,robustness,calibrated_threshold,cal_detected,cal_false_alarms,cal_median_lead_h,fixed35_detected,fixed35_false_alarms,fixed35_median_lead_h
+HDS (10 features),0.011,0.857,0.8695,3.365,5/5,11,1.24,5/5,8,1.24
+RMS only,0.0059,0.8032,0.8102,3.718,5/5,20,0.95,5/5,23,0.95
+Best single (dominant_freq_ch0),0.0098,0.1939,0.759,5.52,1/5,33,1.21,2/5,19,1.1
+Mahalanobis (full covariance),0.0097,0.8386,0.7994,11.462,5/5,100,1.24,5/5,41,1.24
