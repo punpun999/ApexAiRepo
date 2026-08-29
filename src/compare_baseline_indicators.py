@@ -68,6 +68,10 @@ Run:
 import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 CALIBRATION_WINDOWS = 200
 SECONDS_PER_SNAPSHOT = 10
@@ -211,7 +215,7 @@ def evaluate_alarms(series_by_run, threshold, deg):
 
 
 def main():
-    feats = pd.read_csv("features_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
     deg = degradation_reference(feats)
 
     # --- build every indicator for every run ---
@@ -237,7 +241,7 @@ def main():
                 "robustness": robustness(x),
             })
     qdf = pd.DataFrame(qrows)
-    qdf.round(4).to_csv("baseline_indicator_quality.csv", index=False)
+    qdf.round(4).to_csv(RESULTS / "baseline_indicator_quality.csv", index=False)
 
     # --- pick the best single feature by mean monotonicity on DEV runs only ---
     dev_single = qdf[(qdf["role"] == "development")
@@ -290,8 +294,8 @@ def main():
         })
 
     summary = pd.DataFrame(rows)
-    summary.to_csv("baseline_indicator_summary.csv", index=False)
-    pd.DataFrame(alarm_detail).to_csv("baseline_indicator_alarms.csv", index=False)
+    summary.to_csv(RESULTS / "baseline_indicator_summary.csv", index=False)
+    pd.DataFrame(alarm_detail).to_csv(RESULTS / "baseline_indicator_alarms.csv", index=False)
 
     # ------------------------------- report -------------------------------
     pd.set_option("display.width", 200)

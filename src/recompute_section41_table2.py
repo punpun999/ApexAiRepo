@@ -38,6 +38,10 @@ Run:
 import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 CALIBRATION_WINDOWS = 200
 SECONDS_PER_SNAPSHOT = 10
@@ -110,8 +114,8 @@ def bootstrap_ci(values, n_boot=N_BOOTSTRAP, seed=SEED):
 
 
 def main():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
-    feats = pd.read_csv("features_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
     deg = degradation_reference(feats)
 
     rows = []
@@ -147,7 +151,7 @@ def main():
 
     df = pd.DataFrame(rows)
     out = df.drop(columns=["_run", "_ratio"])
-    out.to_csv("table2_per_bearing_recomputed.csv", index=False)
+    out.to_csv(RESULTS / "table2_per_bearing_recomputed.csv", index=False)
 
     print("=" * 74)
     print("TABLE 2 REPLACEMENT — per-bearing HDS summaries")

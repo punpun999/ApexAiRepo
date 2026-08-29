@@ -56,6 +56,10 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 import rul_datasets
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 SAMPLE_RATE_HZ = 25600
 SECONDS_PER_SNAPSHOT = 10
@@ -181,10 +185,10 @@ def main():
             })
 
     preds_df = pd.concat(pred_rows, ignore_index=True)
-    preds_df.to_csv("rul_predictions_per_snapshot.csv", index=False)
+    preds_df.to_csv(RESULTS / "rul_predictions_per_snapshot.csv", index=False)
 
     metrics_df = pd.DataFrame(metric_rows).round(3)
-    metrics_df.to_csv("rul_metrics_per_run.csv", index=False)
+    metrics_df.to_csv(RESULTS / "rul_metrics_per_run.csv", index=False)
 
     # --------------------- pooled evaluation-set summary ---------------------
     ev = preds_df[preds_df["role"] == "evaluation"]
@@ -210,7 +214,7 @@ def main():
         100 * (naive_mae - summary["mae_snapshots"]) / naive_mae).round(1)
     summary["rmse_vs_naive_pct"] = (
         100 * (naive_rmse - summary["rmse_snapshots"]) / naive_rmse).round(1)
-    summary.to_csv("rul_metrics_summary.csv", index=False)
+    summary.to_csv(RESULTS / "rul_metrics_summary.csv", index=False)
 
     # -------------------------------- report --------------------------------
     print("\n" + "=" * 78)

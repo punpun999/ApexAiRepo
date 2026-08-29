@@ -36,6 +36,10 @@ Run:
 
 import numpy as np
 import pandas as pd
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 CALIBRATION_WINDOWS = 200          # must match health_deviation_score.py
 SECONDS_PER_SNAPSHOT = 10
@@ -103,8 +107,8 @@ def degradation_reference(feats):
 
 
 def main():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
-    feats = pd.read_csv("features_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
     deg_start = degradation_reference(feats)
 
     # Pre-compute each run's smoothed score series once (same for every
@@ -151,7 +155,7 @@ def main():
             })
 
     table3 = pd.DataFrame(rows)
-    table3.to_csv("table3_threshold_k_sensitivity.csv", index=False)
+    table3.to_csv(RESULTS / "table3_threshold_k_sensitivity.csv", index=False)
 
     print("Table 3 replacement — threshold x persistence(k) sensitivity")
     print("(fixed-calibration data, smoothed pipeline, 5 evaluation bearings)\n")
