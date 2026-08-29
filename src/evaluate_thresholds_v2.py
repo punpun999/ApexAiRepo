@@ -15,12 +15,17 @@ price of a small reaction delay. ALPHA = 0.2 means roughly "the last
 ~10 windows dominate" (~ 100 s of signal).
 
 Outputs:
-  clean_threshold_evaluation_v2.csv  (raw vs smoothed, per threshold)
-  clean_per_run_alarms_v2.csv        (per run x threshold, smoothed)
+  results/clean_threshold_evaluation_v2.csv  (raw vs smoothed, per threshold)
+  results/clean_per_run_alarms_v2.csv        (per run x threshold, smoothed)
 """
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 CALIBRATION_WINDOWS = 200
 SECONDS_PER_SNAPSHOT = 10
@@ -126,16 +131,16 @@ def evaluate(scores, deg_start, smooth):
 
 
 def main():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
-    feats = pd.read_csv("features_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
     deg_start = degradation_reference(feats)
 
     raw_rows, _ = evaluate(scores, deg_start, smooth=False)
     smo_rows, smo_detail = evaluate(scores, deg_start, smooth=True)
 
     both = pd.DataFrame(raw_rows + smo_rows)
-    both.to_csv("clean_threshold_evaluation_v2.csv", index=False)
-    pd.DataFrame(smo_detail).to_csv("clean_per_run_alarms_v2.csv", index=False)
+    both.to_csv(RESULTS / "clean_threshold_evaluation_v2.csv", index=False)
+    pd.DataFrame(smo_detail).to_csv(RESULTS / "clean_per_run_alarms_v2.csv", index=False)
 
     print("RAW pipeline (score -> threshold -> persistence):")
     print(pd.DataFrame(raw_rows).drop(columns="pipeline").to_string(index=False))

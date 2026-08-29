@@ -25,15 +25,20 @@ values), editable below. FEMTO is an accelerated-life test: whole
 lifetimes are a few hours, so the planning horizon is expressed in
 FEMTO-time, not real plant time.
 
-Inputs : data/deviation_score_per_snapshot.csv
-         data/features_per_snapshot.csv
-Outputs: clean_threshold_evaluation.csv   (one row per candidate threshold)
-         clean_per_run_alarms.csv         (per run x threshold detail)
-         degradation_start_reference.csv  (3-sigma marker per run)
+Inputs : results/deviation_score_per_snapshot.csv
+         results/features_per_snapshot.csv
+Outputs: results/clean_threshold_evaluation.csv   (one row per candidate threshold)
+         results/clean_per_run_alarms.csv         (per run x threshold detail)
+         results/degradation_start_reference.csv  (3-sigma marker per run)
 """
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+RESULTS = ROOT / "results"
 
 # ----------------------------- parameters -----------------------------
 CALIBRATION_WINDOWS = 200          # must match health_deviation_score.py
@@ -92,8 +97,8 @@ def alarm_events(above: np.ndarray, k: int, start: int, end: int):
 
 
 def main():
-    scores = pd.read_csv("deviation_score_per_snapshot.csv")
-    feats = pd.read_csv("features_per_snapshot.csv")
+    scores = pd.read_csv(RESULTS / "deviation_score_per_snapshot.csv")
+    feats = pd.read_csv(RESULTS / "features_per_snapshot.csv")
 
     # ---------- 1) thresholds context: train-only calibration percentiles ----------
     train_cal = scores[
@@ -128,7 +133,7 @@ def main():
             "healthy_zone_windows": (idx if idx is not None else n) - CALIBRATION_WINDOWS,
         })
     deg_df = pd.DataFrame(deg_rows)
-    deg_df.to_csv("degradation_start_reference.csv", index=False)
+    deg_df.to_csv(RESULTS / "degradation_start_reference.csv", index=False)
     print("\n3-sigma RMS degradation-start reference:")
     print(deg_df.to_string(index=False))
 
@@ -185,8 +190,8 @@ def main():
 
     eval_df = pd.DataFrame(eval_rows)
     detail_df = pd.DataFrame(detail_rows)
-    eval_df.to_csv("clean_threshold_evaluation.csv", index=False)
-    detail_df.to_csv("clean_per_run_alarms.csv", index=False)
+    eval_df.to_csv(RESULTS / "clean_threshold_evaluation.csv", index=False)
+    detail_df.to_csv(RESULTS / "clean_per_run_alarms.csv", index=False)
 
     best = eval_df.loc[eval_df["scenario_cost_sar"].idxmin()]
     print("\nClean threshold evaluation (5 evaluation bearings):")
