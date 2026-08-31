@@ -1,0 +1,6 @@
+run,bearing,lead_h_at_3.5,ref_seq_at_3.5,lead_h_at_4.0,ref_seq_at_4.0
+val_run_0,Bearing1_3,2.1,5,2.1,3
+test_run_0,Bearing1_4,0.95,1,0.95,0
+test_run_1,Bearing1_5,0.14,0,0.14,0
+test_run_2,Bearing1_6,2.27,0,2.27,0
+test_run_3,Bearing1_7,1.24,2,1.24,3

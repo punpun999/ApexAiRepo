@@ -1,0 +1,6 @@
+held_out_run,bearing,threshold_chosen_on_other_four,ref_sequences,lead_h,outcome,cost_sar
+val_run_0,Bearing1_3,3.5,5,2.1,planned,85000
+test_run_0,Bearing1_4,4.0,0,0.95,reactive,101000
+test_run_1,Bearing1_5,4.0,0,0.14,reactive,101000
+test_run_2,Bearing1_6,4.0,0,2.27,planned,80000
+test_run_3,Bearing1_7,5.0,26,1.24,planned,106000

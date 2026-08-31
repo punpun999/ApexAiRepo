@@ -1,0 +1,4 @@
+scaling,calibrated_threshold,trendability,robustness,monotonicity,runs,ref_sequences,median_lead_h,min_lead_h,max_lead_h
+standard (mean/std),3.365,0.857,0.8695,0.011,5/5,11,1.24,0.14,2.27
+robust (median/MAD),95.308,0.822,0.8035,0.0076,2/5,0,0.21,0.03,0.39
+"robust (median/MAD, floored)",95.308,0.822,0.8035,0.0076,2/5,0,0.21,0.03,0.39
