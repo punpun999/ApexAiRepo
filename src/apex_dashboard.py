@@ -1,5 +1,5 @@
 """
-APEX-AI — v1 Dashboard (Streamlit)
+APEX AI — v1 Dashboard (Streamlit)
 
 The display layer of the vertical slice. It ONLY displays:
 the model produces deviation scores, decision_layer.py turns them into
@@ -14,6 +14,7 @@ Reads:    results/deviation_score_per_snapshot.csv, results/features_per_snapsho
 Imports:  decision_layer.py (must be in the same folder)
 """
 
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -38,6 +39,19 @@ EVAL_RUNS = ["val_run_0", "test_run_0", "test_run_1", "test_run_2", "test_run_3"
 
 STATE_COLOR = {"NORMAL": "#2e7d32", "WARNING": "#ef6c00", "CRITICAL": "#c62828"}
 STATE_EMOJI = {"NORMAL": "🟢", "WARNING": "🟠", "CRITICAL": "🔴"}
+
+# ---------------- operator audit log ----------------
+AUDIT_LOG = RESULTS / "audit_log.csv"
+AUDIT_COLUMNS = ["timestamp", "run", "status", "hds_score",
+                 "recommended_action", "operator_decision", "operator_note"]
+# Fixed vocabulary - the operator picks one, no free text, so the log stays
+# analysable (e.g. false-alarm rate per bearing) instead of turning into prose.
+OPERATOR_DECISIONS = [
+    "Acknowledged - followed recommendation",
+    "Acknowledged - different action scheduled",
+    "Dismissed (false alarm)",
+    "Escalated to immediate maintenance",
+]
 
 
 def windows_to_hours(n):
@@ -110,17 +124,63 @@ def threshold_stats(scores, _deg):
 
 
 @st.cache_data
-def decision_timeline(scores, run, warning, critical):
+def decision_timeline(scores, run, warning, critical, ack_windows=()):
+    """ack_windows: sorted tuple of window indices where the operator
+    acknowledged the alarm. At each such window, the layer is reset to
+    NORMAL (via layer.ack()) immediately before that window's own score
+    is processed, so history before the ack is untouched and the state
+    can re-escalate afterwards if the score persists above threshold."""
     g = scores[scores["run"] == run].sort_values("window_index")
+    ack_set = set(ack_windows)
     layer = DecisionLayer(warning_threshold=warning, critical_threshold=critical)
-    recs = [layer.update(v) for v in g["deviation_score"]]
+    recs = []
+    for i, v in enumerate(g["deviation_score"]):
+        if i in ack_set:
+            layer.ack()
+        recs.append(layer.update(v))
     df = pd.DataFrame(recs)
     df["rul_label"] = g["rul_label"].to_numpy()
     return df
 
 
+def load_audit_log():
+    """Read results/audit_log.csv, creating an empty header-only file on first
+    use. Deliberately NOT cached: this app appends to the same file, so it has
+    to be re-read on every rerun."""
+    if not AUDIT_LOG.exists():
+        RESULTS.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(columns=AUDIT_COLUMNS).to_csv(AUDIT_LOG, index=False)
+        return pd.DataFrame(columns=AUDIT_COLUMNS)
+    try:
+        df = pd.read_csv(AUDIT_LOG)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame(columns=AUDIT_COLUMNS)
+    df = df.reindex(columns=AUDIT_COLUMNS)
+    df["operator_note"] = df["operator_note"].fillna("")
+    return df
+
+
+def append_audit_row(row):
+    """Append exactly one acknowledgment to the CSV. Appending (not rewriting)
+    keeps the log durable across app restarts and concurrent sessions."""
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    write_header = not AUDIT_LOG.exists() or AUDIT_LOG.stat().st_size == 0
+    pd.DataFrame([row], columns=AUDIT_COLUMNS).to_csv(
+        AUDIT_LOG, mode="a", header=write_header, index=False)
+
+
+def _acknowledge(run_name, window):
+    acks = st.session_state["ack_windows"].setdefault(run_name, [])
+    if window not in acks:
+        acks.append(window)
+
+
+def _clear_acks(run_name):
+    st.session_state["ack_windows"][run_name] = []
+
+
 # ----------------------------------- UI -----------------------------------
-st.set_page_config(page_title="APEX-AI v1", page_icon="⚙️", layout="wide")
+st.set_page_config(page_title="APEX AI v1", page_icon="⚙️", layout="wide")
 st.markdown("""<meta name="google" content="notranslate">
 <style>
 /* declare content language & block auto-translate side effects */
@@ -137,16 +197,21 @@ st.markdown("""<meta name="google" content="notranslate">
 section[data-testid="stSidebar"] {direction: ltr;}
 </style>""", unsafe_allow_html=True)
 
-st.title("⚙️ APEX-AI — Predictive Maintenance v1")
+st.title("⚙️ APEX AI — Predictive Maintenance v1")
 st.caption("Anomaly detection on PRONOSTIA/FEMTO bearings · cost-based alerting · human-in-the-loop")
 
 scores, feats = load_data()
 deg = degradation_reference(feats)
 runs = list(scores["run"].unique())
 
+st.session_state.setdefault("ack_windows", {})
+
 with st.sidebar:
     st.header("Bearing")
     run = st.selectbox("Select bearing (run)", runs, index=runs.index("test_run_2"))
+    st.session_state["ack_windows"].setdefault(run, [])
+    st.button("Clear acknowledgments for this bearing",
+              on_click=_clear_acks, args=(run,), key="clear_acks_btn")
 
     st.header("Playback")
     n_windows = int((scores["run"] == run).sum())
@@ -194,7 +259,8 @@ with st.sidebar:
                                    "schedule maintenance.")
 
 # ---- decision timeline for the selected bearing / thresholds ----
-tl = decision_timeline(scores, run, warning, critical)
+ack_tuple = tuple(sorted(st.session_state["ack_windows"].get(run, [])))
+tl = decision_timeline(scores, run, warning, critical, ack_tuple)
 now = tl.iloc[t]
 state = now["status"]
 
@@ -207,6 +273,34 @@ with col1:
         <div style="font-size:2rem;">{STATE_EMOJI[state]} {state}</div>
         <div style="font-size:1rem;margin-top:6px;">{ACTIONS[state]}</div>
         </div>""", unsafe_allow_html=True)
+    if state != "NORMAL":
+        # The acknowledgment IS the audit event: the form's submit button is the
+        # Acknowledge button, so an alarm can never be unlatched without leaving
+        # a row in results/audit_log.csv. On submit we append the row, record
+        # the ack window in session_state (which decision_timeline() replays
+        # through layer.ack()), then rerun so the status box refreshes.
+        with st.form(f"ack_form_{run}", clear_on_submit=True):
+            operator_decision = st.selectbox(
+                "Operator decision", OPERATOR_DECISIONS, index=None,
+                placeholder="Select a decision…")
+            operator_note = st.text_input("Note (optional)")
+            submitted = st.form_submit_button("✅ Acknowledge alarm",
+                                              width='stretch')
+        if submitted:
+            if operator_decision is None:
+                st.warning("Select an operator decision before acknowledging.")
+            else:
+                append_audit_row({
+                    "timestamp": datetime.now().isoformat(timespec="seconds"),
+                    "run": run,
+                    "status": state,
+                    "hds_score": round(float(now["smoothed_score"]), 4),
+                    "recommended_action": ACTIONS[state],
+                    "operator_decision": operator_decision,
+                    "operator_note": operator_note.strip(),
+                })
+                _acknowledge(run, t)
+                st.rerun()
 with col2:
     st.metric("Smoothed deviation score", f"{now['smoothed_score']:.2f}",
               help="Average |z-score| across vibration features, EWMA-smoothed. "
@@ -236,16 +330,18 @@ fig.add_trace(go.Scatter(y=tl["deviation_score"][:t + 1], name="raw score",
 fig.add_trace(go.Scatter(y=tl["smoothed_score"][:t + 1], name="smoothed (EWMA)",
                          line=dict(color="#1565c0", width=2.5)))
 fig.add_hline(y=warning, line_dash="dash", line_color=STATE_COLOR["WARNING"],
-              annotation_text=f"WARNING ≥ {warning}")
+              annotation_text=f"WARNING ≥ {warning}",
+              annotation_position="right", annotation_yshift=-14)
 fig.add_hline(y=critical, line_dash="dash", line_color=STATE_COLOR["CRITICAL"],
-              annotation_text=f"CRITICAL ≥ {critical}")
+              annotation_text=f"CRITICAL ≥ {critical}",
+              annotation_position="right", annotation_yshift=14)
 fig.add_vrect(x0=0, x1=min(CALIBRATION_WINDOWS, t + 1),
               fillcolor="#a5d6a7", opacity=0.25, line_width=0,
               annotation_text="calibration", annotation_position="top left")
-fig.update_layout(height=380, margin=dict(l=10, r=10, t=10, b=10),
+fig.update_layout(height=380, margin=dict(l=50, r=140, t=40, b=50),
                   xaxis_title="window index (1 window = 10 s)",
                   yaxis_title="deviation score",
-                  legend=dict(orientation="h", y=1.08))
+                  legend=dict(orientation="h", y=1.1))
 st.plotly_chart(fig, width='stretch')
 
 # ---------------- cost analysis (research contribution) ----------------
@@ -280,7 +376,7 @@ with cc1:
         x=cost_df["threshold"].astype(str), y=cost_df["scenario cost (SAR)"],
         marker_color=["#c62828" if v == best_thr else "#90a4ae"
                       for v in cost_df["threshold"]]))
-    bar.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10),
+    bar.update_layout(height=320, margin=dict(l=70, r=20, t=20, b=50),
                       xaxis_title="candidate threshold",
                       yaxis_title="expected scenario cost (SAR)")
     st.plotly_chart(bar, width='stretch')
@@ -291,3 +387,12 @@ with cc2:
               help="Reactive cost minus planned-maintenance cost.")
     st.dataframe(cost_df, hide_index=True, width='stretch')
 
+# ---------------- operator audit log ----------------
+st.subheader("Audit Log")
+st.caption("Every operator acknowledgment, appended to results/audit_log.csv "
+           "— persists across app restarts. Most recent first.")
+audit_df = load_audit_log()
+if audit_df.empty:
+    st.info("No decisions logged yet.")
+else:
+    st.dataframe(audit_df.iloc[::-1], hide_index=True, width='stretch')
