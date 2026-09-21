@@ -4,3 +4,6 @@ __pycache__/
 .venv/
 *.zip
 venv/
+
+# generated at runtime by src/apex_dashboard.py (auto-created if missing)
+results/audit_log.csv
